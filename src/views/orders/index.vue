@@ -112,7 +112,7 @@ import Default from "@/layouts/Default.vue";
                 <td class="p-3 text-right">
                   <div class="flex items-center justify-end gap-2">
                     <p class="text-green-600 font-medium">Delivered</p>
-                    <img src="assets/images/grocery/15.png" class="w-5 h-5" />
+                    <img src="#" class="w-5 h-5" />
                     <div
                       class="flex gap-2 text-sm text-blue-500 cursor-pointer"
                     >

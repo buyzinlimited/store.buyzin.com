@@ -4,20 +4,9 @@ export const useAppStore = defineStore("app", {
   state: () => ({
     loading: false,
     errors: {},
-    sidebarOpen: false,
   }),
 
   getters: {},
 
-  actions: {
-    openSidebar() {
-      this.sidebarOpen = true;
-    },
-    closeSidebar() {
-      this.sidebarOpen = false;
-    },
-    toggleSidebar() {
-      this.sidebarOpen = !this.sidebarOpen;
-    },
-  },
+  actions: {},
 });
