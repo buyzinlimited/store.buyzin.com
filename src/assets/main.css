@@ -1,1 +1,73 @@
 @import "tailwindcss";
+
+@theme {
+  --color-background: #00d3f3;
+  --color-primary: #00d3f3;
+  --color-secondary: #132348;
+  --color-light: #cbfbf1;
+  --color-border: #f1f1f1;
+  --color-heading: #13163f;
+  --color-body: #132348;
+
+  --color-success: #0e9a5f;
+  --color-warning: #fdae1c;
+  --color-danger: #ff4040;
+  --color-info: #1c8bef;
+
+  --font-heading: "Montserrat", sans-serif;
+  --font-body: "Montserrat", sans-serif;
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-script: Great Vibes, cursive;
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  dialog {
+    margin: auto;
+  }
+}
+
+@layer components {
+  .scrollbar::-webkit-scrollbar {
+    height: 6px;
+    /* horizontal scrollbar thickness */
+    background-color: transparent;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 211, 243, 0.5);
+    border-radius: 10px;
+  }
+
+  .router-link-active,
+  .router-link-exact-active {
+    @apply text-primary font-semibold;
+  }
+
+  .scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 211, 243, 0.9);
+  }
+}

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "https://buyzin.ashikahmed.net", // http://127.0.0.1:8000  https://buyzin.ashikahmed.net
+  baseURL: "http://127.0.0.1:8000", // http://127.0.0.1:8000  https://api.buyzin.com
   headers: {
     "Content-type": "application/json",
     Author: "Ashik Ahmed",
@@ -34,7 +34,7 @@ apiClient.interceptors.response.use(
         authStore.$reset();
 
         // DO NOT return navigateTo — reject error so catch() works
-        navigateTo("/auth/login");
+        window.location.href = "/login";
 
         // send the error to catch()
         return Promise.reject(error);
