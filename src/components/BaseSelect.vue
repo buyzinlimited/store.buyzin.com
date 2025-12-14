@@ -21,16 +21,13 @@ const modelValue = computed({
 
 <template>
   <div class="relative block mb-3">
-    <label v-if="label" class="block mb-2 capitalize">
+    <label v-if="label" class="block capitalize">
       {{ label }}
     </label>
-    <select
-      v-model="modelValue"
-      :class="[
-        'w-full border rounded px-3 py-2 focus:outline-cyan-500 focus:ring focus:ring-cyan-200',
-        error ? 'border-red-500' : 'border-gray-300',
-      ]"
-    >
+    <select v-model="modelValue" :class="[
+      'w-full border rounded px-3 py-1.5 focus:outline-cyan-500 focus:ring focus:ring-cyan-200',
+      error ? 'border-red-500' : 'border-gray-300',
+    ]">
       <option v-for="item in items" :key="item.value" :value="item.value">
         {{ item.label }}
       </option>

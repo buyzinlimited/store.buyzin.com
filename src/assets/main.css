@@ -70,4 +70,32 @@
   .scrollbar:hover::-webkit-scrollbar-thumb {
     background-color: rgba(0, 211, 243, 0.9);
   }
+
+  .base__button {
+    @apply bg-primary text-white px-3.5 py-1.5 rounded;
+  }
+
+  .base__button__outline {
+    @apply border border-primary text-primary bg-transparent px-3.5 py-1.5 rounded;
+  }
+
+  .form__group {
+    @apply mb-3;
+  }
+
+  .form__label {
+    @apply mb-3;
+  }
+
+  .form__control {
+    @apply w-full px-2.5 py-1.5 rounded border focus:border-primary focus:outline-none focus:outline-primary disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500;
+  }
+
+  .base__select {
+    @apply px-2.5 py-1.5 rounded border focus:border-primary focus:outline-none focus:outline-primary disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500;
+  }
+
+  .badge__button {
+  @apply bg-gray-200 px-3 py-1 rounded-full text-sm hover:bg-gray-300;
+}
 }

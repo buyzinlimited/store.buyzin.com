@@ -21,10 +21,16 @@ onMounted(() => {
     theme: "snow",
     modules: {
       toolbar: [
-        ["bold", "italic", "underline"],
+        ["bold", "italic", "underline", "strike"],
         [{ header: [1, 2, 3, false] }],
-        [{ list: "ordered" }, { list: "bullet" }],
+        ["blockquote", "code-block"],
+        [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+        [{ script: "sub" }, { script: "super" }],
+        [{ indent: "-1" }, { indent: "+1" }],
+        [{ color: [] }, { background: [] }],
+        [{ align: [] }],
         ["link", "image"],
+        ["clean"],
       ],
     },
   });
