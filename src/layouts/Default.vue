@@ -8,6 +8,7 @@ import IconSettings from "@/components/icons/IconSettings.vue";
 import IconShoppingCart from "@/components/icons/IconShoppingCart.vue";
 import IconStore from "@/components/icons/IconStore.vue";
 import IconClose from "@/components/icons/IconClose.vue";
+import IconBars from "@/components/icons/IconBars.vue";
 
 const sidebarOpen = ref(false);
 </script>
@@ -17,10 +18,11 @@ const sidebarOpen = ref(false);
   <header class="fixed top-0 left-0 right-0 z-40 h-16 bg-white border-b
            flex items-center justify-between px-4">
     <div class="flex items-center gap-3">
-      <!-- MOBILE MENU BUTTON -->
-      <button class="md:hidden" @click="sidebarOpen = true">
-        ☰
+      <button class="md:hidden" @click="sidebarOpen = !sidebarOpen">
+        <IconClose v-if="sidebarOpen" class="size-5" />
+        <IconBars v-else class="size-5" />
       </button>
+
 
       <RouterLink to="/" class="flex items-center gap-2">
         <img src="/logo.svg" alt="logo" class="h-10 w-auto" />
@@ -53,13 +55,6 @@ const sidebarOpen = ref(false);
            bg-white border-r overflow-y-auto
            transform transition-transform duration-300
            md:translate-x-0" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
-    <!-- MOBILE CLOSE -->
-    <div class="flex items-center justify-between px-4 py-3 md:hidden">
-      <span class="font-semibold">Menu</span>
-      <button @click="sidebarOpen = false">
-        <IconClose class="size-5" />
-      </button>
-    </div>
 
     <nav class="p-3 space-y-1 text-sm font-medium">
       <RouterLink to="/" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-2 rounded-lg
