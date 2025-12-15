@@ -57,25 +57,17 @@ const orders = [
 
 <template>
   <Default>
-    <div class="bg-white rounded-2xl border border-gray-300 m-4 p-6">
+    <div class="bg-white rounded-2xl p-4">
       <h1 class="text-4xl font-bold mb-8">Good afternoon, Erica</h1>
 
-      <div
-        class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-6"
-      >
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-6">
         <h2 class="text-xl font-semibold">Overview</h2>
       </div>
 
       <!-- Stats -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        <StatCard
-          v-for="stat in stats"
-          :key="stat.label"
-          :label="stat.label"
-          :value="stat.value"
-          :change="stat.change"
-          :change-type="stat.changeType"
-        />
+        <StatCard v-for="stat in stats" :key="stat.label" :label="stat.label" :value="stat.value" :change="stat.change"
+          :change-type="stat.changeType" />
       </div>
 
       <!-- Orders -->
