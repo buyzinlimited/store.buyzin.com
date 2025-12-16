@@ -1,6 +1,6 @@
 <script setup>
 import Default from "@/layouts/Default.vue";
-import { reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import BaseSelect from "@/components/BaseSelect.vue";
 import BaseTextarea from "@/components/BaseTextarea.vue";
 import QuillEditor from "@/components/QuillEditor.vue";
@@ -10,73 +10,115 @@ import IconRefresh from "@/components/icons/IconRefresh.vue";
 import BaseFile from "@/components/BaseFile.vue";
 import BaseMultipleFile from "@/components/BaseMultipleFile.vue";
 import IconSearch from "@/components/icons/IconSearch.vue";
+import { useProductStore } from "@/stores/product";
+import { useCategoryStore } from "@/stores/category";
+import CategoryCheckbox from "@/components/CategoryCheckbox.vue";
+import { useBrandStore } from "@/stores/brand";
+
+const productStore = useProductStore();
+const categoryStore = useCategoryStore();
+const brandStore = useBrandStore();
+
+const categories = ref([]);
+const selectedCategories = ref([]);
+
+const loadCategories = async () => {
+    const response = await categoryStore.all();
+    categories.value = response.data;
+}
+
+const brands = ref([]);
+
+const loadBrands = async () => {
+    const response = await brandStore.all();
+    brands.value = response.data;
+}
 
 const form = reactive({
-    name: "Rechargeable Hair Clipper for Men",
-    sku: "",
-    type: "simple",
+    name: "Samsung Galaxy S24 Ultra",
+    sku: "1053394",
 
-    overview: "",
-    description: "",
+    meta_title: "Samsung Galaxy S24 Ultra Price in Bangladesh",
+    meta_description: "Buy Samsung Galaxy S24 Ultra with official warranty and fast delivery.",
+    meta_keywords: "Samsung, Galaxy S24, Smartphone",
+    canonical_url: "https://buyzin.com/products/samsung-galaxy-s24-ultra",
+
+    categories: selectedCategories,
+    brand_id: "1",
+    store_id: "1",
+    collection_id: null,
+
+    overview: "Samsung Galaxy S24 Ultra flagship smartphone with premium features.",
+    description: "<p>Experience next-level performance with Samsung Galaxy S24 Ultra.</p>",
+    specifications: [
+        {
+            title: "Display",
+            items: [
+                { label: "Size", value: "6.8 inch" },
+                { label: "Type", value: "Dynamic AMOLED 2X" }
+            ]
+        },
+        {
+            title: "Performance",
+            items: [
+                { label: "Processor", value: "Snapdragon 8 Gen 3" },
+                { label: "RAM", value: "12GB" }
+            ]
+        }
+    ],
 
     base_price: 25000,
     price: 22500,
+    schedule_start: '2025-12-20',
+    schedule_end: '2025-12-31',
+    currency: "BDT",
+    currency_symbol: "৳",
+    exchange_rate: 1,
 
-    schedule_start: null,
-    schedule_end: null,
+    has_attribute: true,
+    attributes: [
+        {
+            "name": "Color",
+            "options": ["Black", "Silver"]
+        },
+        {
+            "name": "Storage",
+            "options": ["256GB", "512GB"]
+        }
+    ],
 
-    quantity: 0,
+
+    quantity: 50,
     stock: "in_stock",
-    low_stock_threshold: 5,
     sold_count: 0,
-
     weight: 0.5,
-    length: "",
-    width: "",
-    height: "",
+    length: "165",
+    width: "77",
+    height: "8.6",
 
     is_shippable: true,
     cod_available: true,
     estimated_delivery: "3-5 business days",
 
-    options: [
-        {
-            name: "",
-            values: []
-        },
-    ],
-    specifications: [],
+    warranty: "1 Year Official Warranty",
+    is_refundable: true,
+    refund_policy: "7 days replacement warranty",
+    conditions: "Product must be unused and in original packaging.",
 
-    meta_title: "",
-    meta_description: "",
-    meta_keywords: "",
-    canonical_url: "",
-
-    categories: [],
-    brand_id: null,
+    type: "simple",
+    is_featured: true,
+    is_trending: true,
 
     cover: null,
     gallery: [],
-
-    video: {
-        provider: "youtube",
-        code: ""
-    },
-
-    warranty: "",
-    refundable: '',
-    conditions: "",
-
-    tags: [],
-
+    video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     status: "draft",
-    visibility: "private",
 });
 
 
 
 const generateSku = () => {
-    form.sku = Math.floor(100000 + Math.random() * 900000);
+    form.sku = String(Math.floor(100000 + Math.random() * 900000));
 }
 
 const addSpec = () => {
@@ -96,33 +138,129 @@ const removeItem = (specIndex, itemIndex) => {
 };
 
 
+/* === Attributes === */
 const addOption = () => {
-    form.options.push({
+    form.attributes.push({
         name: "",
-        values: [],
+        options: [],
     });
 };
 
 const removeOption = (index) => {
-    form.options.splice(index, 1);
+    form.attributes.splice(index, 1);
+
+    if (form.attributes.length === 0) {
+        form.attributes.push({
+            name: "",
+            options: [],
+        });
+    }
 };
 
-const addValue = (optionIndex, event) => {
+const addValue = (attributeIndex, event) => {
     const value = event.target.value.trim();
+
     if (!value) return;
 
-    const values = form.options[optionIndex].values;
+    const options = form.attributes[attributeIndex].options;
 
-    if (!values.includes(value)) {
-        values.push(value);
+    if (!options.includes(value)) {
+        options.push(value);
     }
 
-    event.target.value = ""; // clear input
+    event.target.value = "";
 };
 
-const removeValue = (optionIndex, valueIndex) => {
-    form.options[optionIndex].values.splice(valueIndex, 1);
+const removeValue = (attributeIndex, optionIndex) => {
+    form.attributes[attributeIndex].options.splice(optionIndex, 1);
 };
+
+const submit = async () => {
+    const payload = new FormData();
+
+    payload.append('name', form.name);
+    payload.append('sku', String(form.sku));
+
+    payload.append('meta_title', form.meta_title);
+    payload.append('meta_description', form.meta_description);
+    payload.append('meta_keywords', form.meta_keywords);
+    payload.append('canonical_url', form.canonical_url);
+
+    form.categories.forEach(id => {
+        payload.append('categories[]', id);
+    });
+
+    if (form.brand_id) payload.append('brand_id', form.brand_id);
+    if (form.store_id) payload.append('store_id', form.store_id);
+    if (form.collection_id) payload.append('collection_id', form.collection_id);
+
+    payload.append('overview', form.overview);
+    payload.append('description', form.description);
+    payload.append('specifications', JSON.stringify(form.specifications));
+
+    payload.append('base_price', form.base_price);
+    payload.append('price', form.price);
+
+    if (form.schedule_start)
+        payload.append('schedule_start', form.schedule_start);
+
+    if (form.schedule_end)
+        payload.append('schedule_end', form.schedule_end);
+
+    if (form.currency) payload.append('currency', form.currency);
+    if (form.currency_symbol) payload.append('currency_symbol', form.currency_symbol);
+    if (form.exchange_rate) payload.append('exchange_rate', form.exchange_rate);
+
+    payload.append('has_attribute', form.has_attribute ? 1 : 0);
+    payload.append('attributes', JSON.stringify(form.attributes));
+
+    payload.append('quantity', form.quantity);
+    payload.append('stock', form.stock);
+    payload.append('sold_count', form.sold_count);
+    payload.append('weight', form.weight);
+    payload.append('length', form.length);
+    payload.append('width', form.width);
+    payload.append('height', form.height);
+
+    payload.append('is_shippable', form.is_shippable ? 1 : 0);
+    payload.append('cod_available', form.cod_available ? 1 : 0);
+    payload.append('estimated_delivery', form.estimated_delivery);
+
+    payload.append('warranty', form.warranty);
+    payload.append('is_refundable', form.is_refundable ? 1 : 0);
+
+    if (form.is_refundable) {
+        payload.append('refund_policy', form.refund_policy);
+    }
+
+    payload.append('conditions', form.conditions);
+
+    payload.append('type', form.type);
+    payload.append('is_featured', form.is_featured ? 1 : 0);
+    payload.append('is_trending', form.is_trending ? 1 : 0);
+
+    if (form.cover instanceof File) {
+        payload.append('cover', form.cover);
+    }
+
+    form.gallery.forEach(file => {
+        payload.append('gallery[]', file);
+    });
+
+    payload.append('video_url', form.video_url);
+    payload.append('status', form.status);
+
+    await productStore.store(payload);
+};
+
+
+
+
+
+onMounted(() => {
+    loadCategories();
+    loadBrands();
+});
 
 </script>
 
@@ -133,8 +271,17 @@ const removeValue = (optionIndex, valueIndex) => {
                 <h4 class="text-xl font-semibold">Add Product</h4>
 
                 <div class="flex items-center gap-2">
-                    <button type="button" @click="submit()" class="base__button disabled:opacity-50">
-                        Save Change
+                    <button type="button" @click="submit" :disabled="productStore.loading" class="base__button flex items-center justify-center gap-2
+           disabled:opacity-50 disabled:cursor-not-allowed">
+
+                        <svg v-if="productStore.loading" class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                        </svg>
+
+                        <span>
+                            {{ productStore.loading ? 'Saving...' : 'Save Change' }}
+                        </span>
                     </button>
 
                     <RouterLink :to="{ name: 'products' }"
@@ -178,93 +325,95 @@ const removeValue = (optionIndex, valueIndex) => {
                                         { label: 'Digital', value: 'digital' },
                                         { label: 'Service', value: 'service' },
                                     ]" />
-                                    <BaseInput label="Base Price" v-model="form.base_price" />
+                                    <BaseInput label="Base Price" type="number" placeholder="Enter base price"
+                                        v-model="form.base_price" />
 
-                                    <BaseInput label="Price" v-model="form.price" />
+                                    <BaseInput label="Price" type="number" placeholder="Enter selling price"
+                                        v-model="form.price" />
+
                                     <BaseInput label="Schedule Start" type="date" v-model="form.schedule_start" />
                                     <BaseInput label="Schedule End" type="date" v-model="form.schedule_end" />
+
+                                    <BaseInput label="Quantity" type="number" v-model="form.quantity"
+                                        placeholder="Enter quentity" />
+
+                                    <BaseInput label="Sold Count" type="number" v-model="form.sold_count"
+                                        placeholder="Enter sold count" />
+                                    <BaseInput label="Weight (kg)" type="number" v-model="form.weight"
+                                        placeholder="e.g. 1.25" />
+
+                                    <BaseInput label="Length (cm)" type="number" v-model="form.length"
+                                        placeholder="e.g. 30" />
+
+                                    <BaseInput label="Width (cm)" type="number" v-model="form.width"
+                                        placeholder="e.g. 20" />
+
+                                    <BaseInput label="Height (cm)" type="number" v-model="form.height"
+                                        placeholder="e.g. 10" />
+
                                 </div>
 
-                                <BaseTextarea label="Overview" />
+                                <BaseInput label="Meta Title" v-model="form.meta_title"
+                                    placeholder="Enter meta title" />
+                                <BaseTextarea label="Meta Description" v-model="form.meta_description"
+                                    placeholder="Enter meta description" />
+                                <BaseTextarea label="Meta keywords" v-model="form.meta_keywords"
+                                    placeholder="Enter meta keywords" />
+                                <BaseInput label="Canonical url" type="url" v-model="form.canonical_url"
+                                    placeholder="Enter Canonical url" />
 
-                                <BaseInput label="Tags" placeholder="Enter product tags..." />
+                                <BaseTextarea label="Overview" v-model="form.overview"
+                                    placeholder="Enter short overviw" />
 
-                                <QuillEditor label="Description" />
+                                <QuillEditor label="Description" v-model="form.description"
+                                    placeholder="Enter product description..." />
 
                             </div>
                         </section>
 
-                        <!-- PRODUCT VARIANTS -->
-                        <section class="bg-white rounded-xl border">
-                            <div class="flex items-center justify-between border-b px-4 py-4">
-                                <h2 class="font-medium">Product Variants</h2>
+
+                        <!-- Attributes -->
+                        <section class="bg-white rounded-xl">
+                            <div class="flex items-center justify-between px-4 py-4">
+                                <h2 class="font-medium">Has Attributes</h2>
 
                                 <label class="flex items-center gap-2 text-sm text-gray-700">
-                                    <input v-model="form.has_option" type="checkbox" class="h-4 w-4" />
-                                    This product has multiple variants
+                                    <input v-model="form.has_attribute" type="checkbox" class="h-4 w-4" />
+                                    This product has multiple Attributes
                                 </label>
                             </div>
 
-                            <div v-if="form.has_option" class="px-4 py-4 space-y-6">
-                                <!-- OPTION CARD -->
-                                <div v-for="(option, i) in form.options" :key="i"
+                            <div v-if="form.has_attribute" class="px-4 py-4 space-y-6">
+                                <div v-for="(attribute, index) in form.attributes" :key="index"
                                     class="border rounded-xl p-4 space-y-4">
                                     <div class="flex items-center gap-3">
-                                        <input v-model="option.name" placeholder="Name (e.g. Color, Size, Material)"
+                                        <input v-model="attribute.name" placeholder="Name (e.g. Color, Size, Material)"
                                             class="w-48 form__control" />
 
-                                        <input @keydown.enter.prevent="addValue(i, $event)"
+                                        <input @keydown.enter.prevent="addValue(index, $event)"
                                             placeholder="Add values (press Enter)" class="form__control flex-1" />
 
-                                        <button @click="removeOption(i)"
+                                        <button @click="removeOption(index)"
                                             class="ml-auto text-red-600 text-sm hover:underline">
                                             Remove
                                         </button>
                                     </div>
 
-                                    <!-- VALUES -->
                                     <div class="flex flex-wrap gap-2">
-                                        <span v-for="(value, vi) in option.values" :key="vi" class="flex items-center gap-2 bg-gray-100 px-3 py-1
+                                        <span v-for="(option, optionIndex) in attribute.options" :key="optionIndex"
+                                            class="flex items-center gap-2 bg-gray-100 px-3 py-1
                  rounded-full text-sm">
-                                            {{ value }}
-                                            <button @click="removeValue(i, vi)"
-                                                class="text-gray-500 hover:text-red-600">
-                                                ✕
+                                            {{ option }}
+                                            <button @click="removeValue(index, optionIndex)">
+                                                <IconClose class="size-4 text-red-600" />
                                             </button>
                                         </span>
                                     </div>
                                 </div>
 
                                 <button @click="addOption" class="base__button">
-                                    + Add another option
+                                    Add option
                                 </button>
-                            </div>
-                        </section>
-
-
-
-                        <!-- Inventory section -->
-                        <section class="bg-white rounded-xl">
-                            <h2 class="font-medium border-b border-dashed px-4 py-4">
-                                Inventory
-                            </h2>
-
-                            <div class="px-4 py-2.5 space-y-4">
-                                <div class="grid grid-cols-4 gap-4">
-                                    <BaseInput label="Quantity" v-model="form.quantity" />
-                                    <BaseSelect label="stock" v-model="form.stock" :items="[
-                                        { label: 'In Stock', value: 'in_stock' },
-                                        { label: 'Out Of Stock', value: 'out_of_stock' },
-                                        { label: 'Preorder', value: 'preorder' },
-                                    ]" />
-
-                                    <BaseInput label="Stock Alert" v-model="form.low_stock_threshold" />
-                                    <BaseInput label="Sold Count" v-model="form.sold_count" />
-                                    <BaseInput label="Weight" v-model="form.weight" />
-                                    <BaseInput label="Length" v-model="form.length" />
-                                    <BaseInput label="Width" v-model="form.width" />
-                                    <BaseInput label="Height" v-model="form.height" />
-                                </div>
                             </div>
                         </section>
 
@@ -309,23 +458,6 @@ const removeValue = (optionIndex, valueIndex) => {
                                 </button>
                             </div>
                         </section>
-
-                        <!-- SEO Meta Information -->
-                        <section class="bg-white rounded-xl">
-                            <h2 class="font-medium border-b border-dashed px-4 py-4">
-                                SEO Meta Information
-                            </h2>
-
-                            <div class="px-4 py-2.5 space-y-4">
-                                <BaseInput label="Meta Title" v-model="form.meta_title"
-                                    placeholder="Enter meta title" />
-                                <BaseTextarea label="Meta Description" placeholder="Enter meta description" />
-                                <BaseTextarea label="Meta keywords" placeholder="Enter meta keywords" />
-                                <BaseInput label="Canonical url" v-model="form.canonical_url"
-                                    placeholder="Enter Canonical url" />
-                            </div>
-                        </section>
-
                     </div>
 
                     <div class="flex-none w-80 space-y-4">
@@ -336,17 +468,12 @@ const removeValue = (optionIndex, valueIndex) => {
                             </h2>
 
                             <div class="px-4 py-2.5">
-                                <div class="grid grid-cols-2 gap-2.5">
-                                    <BaseSelect label="Status" v-model="form.status" :items="[
-                                        { label: 'Published', value: 'published' },
-                                        { label: 'Draft', value: 'draft' },
-                                    ]" />
-
-                                    <BaseSelect label="Visibility" v-model="form.visibility" :items="[
-                                        { label: 'Public', value: 'public' },
-                                        { label: 'Private', value: 'private' },
-                                    ]" />
-                                </div>
+                                <BaseSelect label="Status" v-model="form.status" :items="[
+                                    { label: 'Public', value: 'public' },
+                                    { label: 'Private', value: 'private' },
+                                    { label: 'Draft', value: 'draft' },
+                                    { label: 'Archived', value: 'archived' },
+                                ]" />
 
                                 <div class="flex items-center gap-2 mb-2">
                                     <input type="checkbox" v-model="form.is_shippable" id="shippable" class="h-4 w-4" />
@@ -358,6 +485,16 @@ const removeValue = (optionIndex, valueIndex) => {
                                     <label for="cod" class="text-gray-700">Cash on Delivery</label>
                                 </div>
 
+                                <div class="flex items-center gap-2 mb-2">
+                                    <input type="checkbox" v-model="form.is_featured" id="cod" class="h-4 w-4" />
+                                    <label for="is_featured" class="text-gray-700">Featured</label>
+                                </div>
+
+                                <div class="flex items-center gap-2 mb-2">
+                                    <input type="checkbox" v-model="form.is_trending" id="cod" class="h-4 w-4" />
+                                    <label for="is_trending" class="text-gray-700">Trending</label>
+                                </div>
+
                                 <div>
                                     <label class="block text-gray-700 mb-1">Estimated Delivery</label>
                                     <input type="text" v-model="form.estimated_delivery"
@@ -367,8 +504,16 @@ const removeValue = (optionIndex, valueIndex) => {
 
                                 <BaseInput label="Warranty" v-model="form.warranty"
                                     placeholder="Enter warranty period" />
-                                <BaseInput label="Refundable" v-model="form.refundable"
-                                    placeholder="Is the product refundable?" />
+                                <div class="group">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <input type="checkbox" v-model="form.is_refundable" id="is_refundable"
+                                            class="h-4 w-4" />
+                                        <label for="is_refundable" class="text-gray-700">Is Refundable</label>
+                                    </div>
+                                    <input type="text" v-if="form.is_refundable" v-model="form.refund_policy"
+                                        class="form__control" placeholder="Is the product refundable?" />
+                                </div>
+
                                 <BaseInput label="Conditions" v-model="form.conditions"
                                     placeholder="Enter product conditions" />
                             </div>
@@ -386,101 +531,12 @@ const removeValue = (optionIndex, valueIndex) => {
                                     <input type="search" placeholder="Search..." class="form__control pl-10 pr-3" />
                                 </label>
                             </div>
-                            <div class="px-4 py-2 space-y-3">
-                                <div class="space-y-2">
-                                    <label class="flex items-center justify-between cursor-pointer">
-                                        <div class="flex items-center space-x-2">
-                                            <input type="checkbox"
-                                                class="accent-primary size-4 rounded border-gray-300" />
-                                            <span class="font-medium">Finance</span>
-                                        </div>
-                                        <i class="fa-light fa-minus text-gray-500"></i>
-                                    </label>
 
-                                    <div class="pl-6 border-l-2 border-primary space-y-2">
-                                        <label class="flex items-center space-x-2 cursor-pointer">
-                                            <input type="checkbox"
-                                                class="accent-primary size-4 rounded border-gray-300" />
-                                            <span>Banking</span>
-                                        </label>
-
-                                        <div class="space-y-2">
-                                            <label class="flex items-center justify-between cursor-pointer">
-                                                <div class="flex items-center space-x-2">
-                                                    <input type="checkbox"
-                                                        class="accent-primary size-4 rounded border-gray-300" />
-                                                    <span>Accounting</span>
-                                                </div>
-                                                <i class="fa-light fa-plus text-gray-500"></i>
-                                            </label>
-
-                                            <div class="pl-6 border-l border-gray-200 space-y-2 hidden">
-                                                <label class="flex items-center space-x-2 cursor-pointer">
-                                                    <input type="checkbox"
-                                                        class="accent-primary size-4 rounded border-gray-300" />
-                                                    <span>Bangladesh Bank</span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="px-4 py-2 space-y-3 max-h-80 overflow-y-auto scrollbar">
+                                <div class="space-y-4">
+                                    <CategoryCheckbox v-for="category in categories" :key="category.id"
+                                        :category="category" v-model="selectedCategories" />
                                 </div>
-
-                                <div class="space-y-2">
-                                    <label class="flex items-center justify-between cursor-pointer">
-                                        <div class="flex items-center space-x-2">
-                                            <input type="checkbox"
-                                                class="accent-primary size-4 rounded border-gray-300" />
-                                            <span>Fashion & Clothing</span>
-                                        </div>
-                                        <i class="fa-light fa-plus text-gray-500"></i>
-                                    </label>
-
-                                    <div class="pl-6 border-l border-gray-200 space-y-2 hidden">
-                                        <label class="flex items-center space-x-2 cursor-pointer">
-                                            <input type="checkbox"
-                                                class="accent-primary size-4 rounded border-gray-300" />
-                                            <span>T-Shirt</span>
-                                        </label>
-
-                                        <div class="space-y-2">
-                                            <label class="flex items-center justify-between cursor-pointer">
-                                                <div class="flex items-center space-x-2">
-                                                    <input type="checkbox"
-                                                        class="accent-primary size-4 rounded border-gray-300" />
-                                                    <span>Shirt</span>
-                                                </div>
-                                                <i class="fa-light fa-plus text-gray-500"></i>
-                                            </label>
-
-                                            <div class="pl-6 border-l border-gray-200 space-y-2 hidden">
-                                                <label class="flex items-center space-x-2 cursor-pointer">
-                                                    <input type="checkbox" class="size-4 rounded border-gray-300" />
-                                                    <span>Casual Shirt</span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="checkbox" class="size-4 rounded border-gray-300" />
-                                    <span>Bag</span>
-                                </label>
-
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="checkbox" class="size-4 rounded border-gray-300" />
-                                    <span>Monitor</span>
-                                </label>
-
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="checkbox" class="size-4 rounded border-gray-300" />
-                                    <span>Keyboard</span>
-                                </label>
-
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="checkbox" class="size-4 rounded border-gray-300" />
-                                    <span>Mouse</span>
-                                </label>
                             </div>
                         </section>
 
@@ -494,26 +550,14 @@ const removeValue = (optionIndex, valueIndex) => {
                                     <input type="search" placeholder="Search..." class="form__control pl-10 pr-3" />
                                 </label>
                             </div>
-                            <div class="px-4 py-2 space-y-3">
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" class="size-4 rounded border-gray-300" />
-                                    <span>Walton</span>
+                            <div class="px-4 py-2 space-y-3 max-h-80 overflow-y-auto scrollbar">
+                                <label v-for="brand in brands" :key="brand.id"
+                                    class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" :value="brand.id" v-model="form.brand_id"
+                                        class="size-4 rounded border-gray-300" />
+                                    <span>{{ brand.name }}</span>
                                 </label>
 
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" class="size-4 rounded border-gray-300" />
-                                    <span>LG</span>
-                                </label>
-
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" class="size-4 rounded border-gray-300" />
-                                    <span>Gigabyte</span>
-                                </label>
-
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" class="size-4 rounded border-gray-300" />
-                                    <span>Samsung</span>
-                                </label>
                             </div>
                         </section>
 
@@ -522,25 +566,16 @@ const removeValue = (optionIndex, valueIndex) => {
                             <h2 class="font-medium border-b border-dashed px-4 py-4">Media</h2>
 
                             <div class="px-4 py-2.5 space-y-4">
-                                <BaseFile label="Cover" v-model="form.cover" :required="true" error="" />
-                                <BaseMultipleFile label="Gallery" v-model="form.gallery" :required="true" error="" />
+                                <input type="file" accept="image/*" @change="form.cover = $event.target.files[0]" />
 
-                                <div class="space-y-1">
-                                    <label class="block text-sm font-medium text-gray-700">
-                                        Video URL
-                                    </label>
+                                <input type="file" accept="image/*" multiple
+                                    @change="form.gallery = Array.from($event.target.files)" />
+                                <!-- <BaseFile label="Cover" v-model="form.cover" :required="true" error="" />
+                                <BaseMultipleFile label="Gallery" v-model="form.gallery" :required="true" error="" /> -->
 
-                                    <div class="relative">
-                                        <input type="text" placeholder="(e.g. dQw4w9WgXcQ)" class="w-full rounded-lg border border-gray-300 pl-3 pr-28 py-2 text-sm
-             focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none" />
+                                <BaseInput label="Video URL" type="url" v-model="form.video_url"
+                                    placeholder="https://www.youtube.com/watch?v=bTqVqk7FSmY" />
 
-                                        <select
-                                            class="-translate-y-1/2 absolute outline-none right-0 top-1/2 appearance-none px-2.5">
-                                            <option value="youtube">YouTube</option>
-                                            <option value="vimeo">Vimeo</option>
-                                        </select>
-                                    </div>
-                                </div>
 
                             </div>
                         </section>

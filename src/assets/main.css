@@ -47,10 +47,12 @@
 }
 
 @layer components {
+  /* Default hidden scrollbar */
   .scrollbar::-webkit-scrollbar {
-    height: 6px;
-    /* horizontal scrollbar thickness */
+    width: 0px;
+    height: 0px;
     background-color: transparent;
+    transition: width 0.25s ease, height 0.25s ease;
   }
 
   .scrollbar::-webkit-scrollbar-track {
@@ -58,8 +60,19 @@
   }
 
   .scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 211, 243, 0.5);
+    background-color: rgba(0, 211, 243, 0.4);
     border-radius: 10px;
+    transition: background-color 0.25s ease;
+  }
+
+  /* Hover — show with animation */
+  .scrollbar:hover::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 211, 243, 0.9);
   }
 
   .router-link-active,
@@ -96,6 +109,6 @@
   }
 
   .badge__button {
-  @apply bg-gray-200 px-3 py-1 rounded-full text-sm hover:bg-gray-300;
-}
+    @apply bg-gray-200 px-3 py-1 rounded-full text-sm hover:bg-gray-300;
+  }
 }

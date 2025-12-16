@@ -6,6 +6,7 @@ export const useProductStore = defineStore("product", {
     loading: false,
     errors: {},
     products: [],
+    product: {},
   }),
 
   getters: {},
@@ -21,6 +22,31 @@ export const useProductStore = defineStore("product", {
         });
         if (response.status === 200) {
           this.products = response.data;
+          return Promise.resolve(response);
+        }
+      } catch (error) {
+        if (error.reponse) {
+          return Promise.reject(error.reponse.data.errors);
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async store(formData) {
+      this.loading = true;
+      try {
+        const response = await apiClient.post(
+          "/api/vendor/products",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (response.status === 201) {
+          this.product = response.data;
           return Promise.resolve(response);
         }
       } catch (error) {

@@ -11,6 +11,7 @@ import IconBars from "@/components/icons/IconBars.vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
+import IconPayouts from "@/components/icons/IconPayouts.vue";
 
 const authStore = useAuthStore();
 
@@ -86,6 +87,12 @@ const logout = async () => {
                text-gray-700 hover:bg-gray-100 hover:text-gray-900" active-class="bg-gray-200 text-gray-900">
         <IconGroup class="size-5" />
         Customers
+      </RouterLink>
+
+      <RouterLink to="/payouts" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-2 rounded-lg
+               text-gray-700 hover:bg-gray-100 hover:text-gray-900" active-class="bg-gray-200 text-gray-900">
+        <IconPayouts class="size-5" />
+        Payouts
       </RouterLink>
 
       <RouterLink to="/settings" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-2 rounded-lg
