@@ -1,14 +1,21 @@
-import './assets/main.css'
+import "./assets/main.css";
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { Vueginate } from "vueginate";
+import "vueginate/css/vueginate.css";
 
-import App from './App.vue'
-import router from './router'
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
-const app = createApp(App)
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
 
-app.use(createPinia())
-app.use(router)
+import App from "./App.vue";
+import router from "./router";
 
-app.mount('#app')
+const app = createApp(App);
+
+app.use(pinia);
+app.use(router);
+app.component("Pagination", Vueginate);
+app.mount("#app");

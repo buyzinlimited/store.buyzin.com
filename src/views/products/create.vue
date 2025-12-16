@@ -131,8 +131,19 @@ const removeValue = (optionIndex, valueIndex) => {
         <main class="w-full">
             <nav class="flex items-center justify-between mb-4">
                 <h4 class="text-xl font-semibold">Add Product</h4>
-                <RouterLink :to="{ name: 'products' }" class="base__button">View All</RouterLink>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="submit()" class="base__button disabled:opacity-50">
+                        Save Change
+                    </button>
+
+                    <RouterLink :to="{ name: 'products' }"
+                        class="px-4 py-2 rounded-lg border text-sm hover:bg-gray-100">
+                        View All
+                    </RouterLink>
+                </div>
             </nav>
+
 
             <div class="py-2.5 space-y-4">
                 <div class="flex flex-wrap items-start gap-4">
@@ -164,7 +175,6 @@ const removeValue = (optionIndex, valueIndex) => {
 
                                     <BaseSelect label="Product Type" v-model="form.type" :items="[
                                         { label: 'Simple', value: 'simple' },
-                                        { label: 'Variable', value: 'variable' },
                                         { label: 'Digital', value: 'digital' },
                                         { label: 'Service', value: 'service' },
                                     ]" />
@@ -177,44 +187,60 @@ const removeValue = (optionIndex, valueIndex) => {
 
                                 <BaseTextarea label="Overview" />
 
+                                <BaseInput label="Tags" placeholder="Enter product tags..." />
+
                                 <QuillEditor label="Description" />
 
                             </div>
                         </section>
 
-                        <!-- Options -->
-                        <section v-if="form.type === 'variable'" class="bg-white rounded-xl">
-                            <h2 class="font-medium border-b px-4 py-4">Options</h2>
+                        <!-- PRODUCT VARIANTS -->
+                        <section class="bg-white rounded-xl border">
+                            <div class="flex items-center justify-between border-b px-4 py-4">
+                                <h2 class="font-medium">Product Variants</h2>
 
-                            <div class="px-4 py-4 space-y-6">
+                                <label class="flex items-center gap-2 text-sm text-gray-700">
+                                    <input v-model="form.has_option" type="checkbox" class="h-4 w-4" />
+                                    This product has multiple variants
+                                </label>
+                            </div>
+
+                            <div v-if="form.has_option" class="px-4 py-4 space-y-6">
+                                <!-- OPTION CARD -->
                                 <div v-for="(option, i) in form.options" :key="i"
                                     class="border rounded-xl p-4 space-y-4">
                                     <div class="flex items-center gap-3">
-                                        <input v-model="option.name" placeholder="Name (e.g. Color)"
-                                            class="w-40 form__control" />
+                                        <input v-model="option.name" placeholder="Name (e.g. Color, Size, Material)"
+                                            class="w-48 form__control" />
 
                                         <input @keydown.enter.prevent="addValue(i, $event)"
-                                            placeholder="Type value & press Enter" class="form__control" />
+                                            placeholder="Add values (press Enter)" class="form__control flex-1" />
 
-                                        <button @click="removeOption(i)" class="ml-auto text-danger text-sm">
-                                            Clear
+                                        <button @click="removeOption(i)"
+                                            class="ml-auto text-red-600 text-sm hover:underline">
+                                            Remove
                                         </button>
                                     </div>
 
+                                    <!-- VALUES -->
                                     <div class="flex flex-wrap gap-2">
-                                        <span v-for="(value, vi) in option.values" :key="vi"
-                                            class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
+                                        <span v-for="(value, vi) in option.values" :key="vi" class="flex items-center gap-2 bg-gray-100 px-3 py-1
+                 rounded-full text-sm">
                                             {{ value }}
-                                            <button @click="removeValue(i, vi)">✕</button>
+                                            <button @click="removeValue(i, vi)"
+                                                class="text-gray-500 hover:text-red-600">
+                                                ✕
+                                            </button>
                                         </span>
                                     </div>
                                 </div>
 
                                 <button @click="addOption" class="base__button">
-                                    Add Option
+                                    + Add another option
                                 </button>
                             </div>
                         </section>
+
 
 
                         <!-- Inventory section -->
@@ -338,6 +364,13 @@ const removeValue = (optionIndex, valueIndex) => {
                                         placeholder="e.g. 3-5 business days"
                                         class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
                                 </div>
+
+                                <BaseInput label="Warranty" v-model="form.warranty"
+                                    placeholder="Enter warranty period" />
+                                <BaseInput label="Refundable" v-model="form.refundable"
+                                    placeholder="Is the product refundable?" />
+                                <BaseInput label="Conditions" v-model="form.conditions"
+                                    placeholder="Enter product conditions" />
                             </div>
                         </section>
 
@@ -511,38 +544,9 @@ const removeValue = (optionIndex, valueIndex) => {
 
                             </div>
                         </section>
-
-                        <!-- Warranty & Refund -->
-                        <section class="bg-white rounded-x">
-                            <h2 class="font-medium border-b border-dashed px-4 py-4">
-                                Warranty & Refund
-                            </h2>
-
-                            <div class="px-4 py-2.5 space-y-4">
-                                <BaseInput label="Warranty" v-model="form.warranty"
-                                    placeholder="Enter warranty period" />
-                                <BaseInput label="Refundable" v-model="form.refundable"
-                                    placeholder="Is the product refundable?" />
-                                <BaseInput label="Conditions" v-model="form.conditions"
-                                    placeholder="Enter product conditions" />
-                            </div>
-                        </section>
-
-                        <!-- Tags -->
-                        <section class="bg-white rounded-xl">
-                            <h2 class="font-medium border-b border-dashed px-4 py-4">Tags</h2>
-
-                            <div class="px-4 py-2.5">
-                                <BaseTextarea label="Tags" placeholder="Enter product tags" />
-                                <span class="text-xs">Use commas to separate tags</span>
-                            </div>
-                        </section>
-
-
                     </div>
                 </div>
             </div>
-
 
         </main>
     </Default>

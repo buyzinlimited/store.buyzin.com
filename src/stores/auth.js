@@ -1,4 +1,5 @@
-import apiClient from "~/utils/axios";
+import apiClient from "@/utils/axios";
+import { defineStore } from "pinia";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -15,6 +16,8 @@ export const useAuthStore = defineStore("auth", {
 
   getters: {
     loggedIn: (state) => !!state.token,
+
+    role: (state) => state.user?.role ?? null,
   },
 
   actions: {
@@ -25,14 +28,13 @@ export const useAuthStore = defineStore("auth", {
         if (response.status === 200) {
           this.token = response.data.token;
           this.user = response.data.user;
-          toast.success(response.data.message);
-          setTimeout(() => {
-            navigateTo("/profile");
-          }, 3000);
+          return Promise.resolve(response);
         }
       } catch (error) {
-        toast.error(error.response.data.message);
-        this.errors = error.response.data;
+        if (error.response) {
+          this.errors = error.response.data.errors;
+        }
+        return Promise.reject(error.response);
       } finally {
         this.loading = false;
       }
@@ -43,13 +45,8 @@ export const useAuthStore = defineStore("auth", {
       try {
         const response = await apiClient.post("/api/auth/register", formData);
         if (response.status === 201) {
-          toast.success(response.data.message);
-          setTimeout(() => {
-            navigateTo("/auth/login");
-          }, 2000);
         }
       } catch (error) {
-        toast.error(error.response.data.message);
         this.errors = error.response.data.errors;
       } finally {
         this.loading = false;
@@ -61,13 +58,8 @@ export const useAuthStore = defineStore("auth", {
       try {
         const response = await apiClient.post("/api/auth/forgot", formData);
         if (response.status === 200) {
-          toast.success(response.data.message);
-          setTimeout(() => {
-            navigateTo("/auth/login");
-          }, 2000);
         }
       } catch (error) {
-        toast.error(error.response.data.message);
         this.errors = error.response.data.errors;
       } finally {
         this.loading = false;
@@ -78,7 +70,6 @@ export const useAuthStore = defineStore("auth", {
       try {
         const response = await apiClient.post("/api/auth/logout");
         if (response.status === 200) {
-          toast.success(response.data.message);
           this.$reset();
           return navigateTo("/");
         }

@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from "vue";
-
 import IconGroup from "@/components/icons/IconGroup.vue";
 import IconHome from "@/components/icons/IconHome.vue";
 import IconLogout from "@/components/icons/IconLogout.vue";
@@ -9,8 +8,21 @@ import IconShoppingCart from "@/components/icons/IconShoppingCart.vue";
 import IconStore from "@/components/icons/IconStore.vue";
 import IconClose from "@/components/icons/IconClose.vue";
 import IconBars from "@/components/icons/IconBars.vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { storeToRefs } from "pinia";
+
+const authStore = useAuthStore();
+
+const { user } = storeToRefs(authStore);
 
 const sidebarOpen = ref(false);
+const router = useRouter();
+
+
+const logout = async () => {
+  await router.push({ name: 'login' });
+}
 </script>
 
 <template>
@@ -29,28 +41,23 @@ const sidebarOpen = ref(false);
       </RouterLink>
     </div>
 
-    <div class="flex items-center gap-3">
-      <!-- AVATAR -->
-      <img src="https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff" alt="avatar"
-        class="h-9 w-9 rounded-full object-cover" />
+    <div v-if="user" class="flex items-center gap-3">
 
-      <!-- USER INFO -->
-      <div class="leading-tight">
-        <p class="text-sm font-semibold text-gray-900">
-          John Doe
-        </p>
+      <img :src="user.photo_url" :alt="user.name" class="h-9 w-9 rounded-full object-cover" />
+
+      <div class="hidden md:block leading-tight">
+        <h3 class="text-sm font-semibold text-gray-900">
+          {{ user.name }}
+        </h3>
         <p class="text-xs text-gray-500">
-          +880 17 1234 5678
+          {{ user.email }}
         </p>
       </div>
     </div>
 
   </header>
 
-  <!-- BACKDROP (MOBILE) -->
-  <div v-if="sidebarOpen" class="fixed inset-0 bg-black/40 z-30 md:hidden" @click="sidebarOpen = false" />
-
-  <!-- SIDEBAR -->
+  <!-- Sidebar -->
   <aside class="fixed top-16 left-0 z-40 w-64 h-[calc(100vh-4rem)]
            bg-white border-r overflow-y-auto
            transform transition-transform duration-300
@@ -89,7 +96,7 @@ const sidebarOpen = ref(false);
 
       <hr class="my-3" />
 
-      <button class="w-full flex items-center gap-3 px-4 py-2 rounded-lg
+      <button @click="logout" class="w-full flex items-center gap-3 px-4 py-2 rounded-lg
                text-red-600 hover:bg-red-50">
         <IconLogout class="size-5" />
         Logout
