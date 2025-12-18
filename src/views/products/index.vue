@@ -45,7 +45,6 @@ onMounted(() => {
                 </tr>
               </thead>
 
-              <!-- Table Body -->
               <tbody class="divide-y">
                 <tr v-for="product in products.data" :key="product.id" class="hover:bg-gray-50 transition">
 
@@ -56,47 +55,51 @@ onMounted(() => {
                         <h3 class="font-medium text-gray-900">
                           {{ product.name }}
                         </h3>
-                        <p class="text-xs text-gray-500">
-                          Electronics
-                        </p>
+
+                        <div class="flex items-center">
+                          <p v-for="category in product.categories" :key="category.id" class="text-xs text-gray-500
+         after:content-['•']
+         after:mx-1
+         last:after:content-none">
+                            {{ category.name }}
+                          </p>
+                        </div>
+
                       </div>
                     </div>
                   </td>
 
-                  <!-- SKU -->
                   <td class="px-4 py-3 text-gray-600">
-                    EAR-WL-0001
+                    {{ product.sku }}
                   </td>
 
-                  <!-- Price -->
-                  <td class="px-4 py-3 font-medium">
-                    ৳2,750
+                  <td class="px-4 py-3">
+                    <div v-if="product.price" class="font-font-medium">
+                      <del class="font-normal ml-2">{{ product.base_price_formatted }}</del>
+                      <span class="font-normal ml-2">{{ product.price_formatted }}</span>
+                    </div>
+                    <p v-else class="font-font-medium">{{ product.base_price_formatted }}</p>
                   </td>
 
-                  <!-- Stock -->
                   <td class="px-4 py-3">
                     <span class="text-green-600 font-medium">
-                      In Stock
+                      {{ product.quantity }}
                     </span>
                   </td>
 
-                  <!-- Status -->
                   <td class="px-4 py-3">
-                    <span
-                      class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                      Active
+                    <span class="px-2.5 py-1 capitalize rounded-full text-xs font-medium bg-green-100 text-green-700">
+                      {{ product.status }}
                     </span>
                   </td>
 
                   <!-- Actions -->
                   <td class="px-4 py-3 text-right">
                     <div class="flex justify-end gap-2">
-                      <button class="px-3 py-1.5 text-xs rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100">
+                      <RouterLink :to="{ name: 'products.edit', params: { id: product.id } }"
+                        class="bg-primary text-white px-4 py-1 text-xs rounded">
                         Edit
-                      </button>
-                      <button class="px-3 py-1.5 text-xs rounded-lg bg-red-50 text-red-600 hover:bg-red-100">
-                        Delete
-                      </button>
+                      </RouterLink>
                     </div>
                   </td>
                 </tr>

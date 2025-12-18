@@ -1,3 +1,4 @@
+@import "vue-toastification/dist/index.css";
 @import "tailwindcss";
 
 @theme {
@@ -7,7 +8,7 @@
   --color-light: #cbfbf1;
   --color-border: #f1f1f1;
   --color-heading: #13163f;
-  --color-body: #132348;
+  --color-body: #132348cf;
 
   --color-success: #0e9a5f;
   --color-warning: #fdae1c;

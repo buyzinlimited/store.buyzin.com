@@ -1,5 +1,6 @@
 import apiClient from "@/utils/axios";
 import { defineStore } from "pinia";
+import Toast from "@/utils/toast";
 
 export const useProductStore = defineStore("product", {
   state: () => ({
@@ -47,10 +48,12 @@ export const useProductStore = defineStore("product", {
         );
         if (response.status === 201) {
           this.product = response.data;
+          Toast("success", response.data.message);
           return Promise.resolve(response);
         }
       } catch (error) {
         if (error.reponse) {
+          Toast("error", error.response.data.message);
           return Promise.reject(error.reponse.data.errors);
         }
       } finally {

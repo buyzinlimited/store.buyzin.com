@@ -1,4 +1,6 @@
 import "./assets/main.css";
+import Toast, { POSITION } from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 import { Vueginate } from "vueginate";
 import "vueginate/css/vueginate.css";
@@ -17,5 +19,9 @@ const app = createApp(App);
 
 app.use(pinia);
 app.use(router);
+app.use(Toast, {
+  timeout: 2000,
+  position: POSITION.TOP_CENTER,
+});
 app.component("Pagination", Vueginate);
 app.mount("#app");

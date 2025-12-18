@@ -280,7 +280,7 @@ onMounted(() => {
                         </svg>
 
                         <span>
-                            {{ productStore.loading ? 'Saving...' : 'Save Change' }}
+                            {{ productStore.loading ? 'Please wait...' : 'Update' }}
                         </span>
                     </button>
 
@@ -291,7 +291,7 @@ onMounted(() => {
                 </div>
             </nav>
 
-          
+
             <div class="py-2.5 space-y-4">
                 <div class="flex flex-wrap items-start gap-4">
                     <div class="flex-1 space-y-4">

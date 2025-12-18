@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch, defineProps, defineEmits } from "vue";
+import { onMounted, ref, watch } from "vue";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 

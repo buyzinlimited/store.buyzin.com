@@ -39,6 +39,12 @@ const router = createRouter({
     },
 
     {
+      path: "/products/:id/edit",
+      name: "products.edit",
+      component: () => import("../views/products/update.vue"),
+    },
+
+    {
       path: "/orders",
       name: "orders",
       component: () => import("../views/orders/index.vue"),
