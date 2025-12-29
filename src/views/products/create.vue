@@ -253,10 +253,6 @@ const submit = async () => {
     await productStore.store(payload);
 };
 
-
-
-
-
 onMounted(() => {
     loadCategories();
     loadBrands();
@@ -291,7 +287,7 @@ onMounted(() => {
                 </div>
             </nav>
 
-          
+
             <div class="py-2.5 space-y-4">
                 <div class="flex flex-wrap items-start gap-4">
                     <div class="flex-1 space-y-4">
@@ -566,16 +562,12 @@ onMounted(() => {
                             <h2 class="font-medium border-b border-dashed px-4 py-4">Media</h2>
 
                             <div class="px-4 py-2.5 space-y-4">
-                                <!-- <input type="file" accept="image/*" @change="form.cover = $event.target.files[0]" />
-
-                                <input type="file" accept="image/*" multiple
-                                    @change="form.gallery = Array.from($event.target.files)" /> -->
-                                <BaseFile label="Cover" v-model="form.cover" :required="true" error="" />
-                                <BaseMultipleFile label="Gallery" v-model="form.gallery" :required="true" error="" />
+                                <BaseFile label="Cover (1200 × 1200)" v-model="form.cover" :required="true" error="" />
+                                <BaseMultipleFile label="Gallery (1200 × 1200)" v-model="form.gallery" :required="true"
+                                    error="" />
 
                                 <BaseInput label="Video URL" type="url" v-model="form.video_url"
                                     placeholder="https://www.youtube.com/watch?v=bTqVqk7FSmY" />
-
 
                             </div>
                         </section>

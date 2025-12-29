@@ -13,7 +13,8 @@
         class="relative w-20 h-20 rounded overflow-hidden border border-dashed border-gray-300">
         <img :src="file.url" alt="Preview" class="object-cover w-full h-full" />
 
-        <button @click="removeFile(index)" class="absolute bottom-1 left-1 right-1 bg-black/50 text-white rounded">
+        <button @click="removeFile(index)"
+          class="absolute bottom-1 left-1 right-1 bg-black/50 text-white text-xs rounded">
           Remove
         </button>
       </div>
