@@ -60,5 +60,36 @@ export const useProductStore = defineStore("product", {
         this.loading = false;
       }
     },
+
+    async show(product) {
+      try {
+        const response = await apiClient.get(`/api/vendor/products/${product}`);
+        if (response.status === 200) {
+          return Promise.resolve(response.data);
+        }
+      } catch (error) {
+        if (error.reponse) {
+          return Promise.reject(error.reponse.data.errors);
+        }
+      }
+    },
+
+    async update(product, payload) {
+      try {
+        const response = await apiClient.post(
+          `/api/vendor/products/${product}`,
+          payload
+        );
+        if (response.status === 200) {
+          Toast("success", response.data.message);
+          return Promise.resolve(response.data);
+        }
+      } catch (error) {
+        if (error.reponse) {
+          Toast("error", error.response.data.message);
+          return Promise.reject(error.reponse.data.errors);
+        }
+      }
+    },
   },
 });

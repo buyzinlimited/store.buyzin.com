@@ -7,14 +7,13 @@ const props = defineProps({
         required: true,
     },
     modelValue: {
-        type: Array,
-        required: true,
+        type: [Number, String, null],
+        default: null,
     },
 });
 
 const emit = defineEmits(["update:modelValue"]);
 
-// computed proxy for v-model
 const selected = computed({
     get() {
         return props.modelValue;
@@ -28,17 +27,14 @@ const selected = computed({
 
 <template>
     <div class="space-y-2">
-        <label class="flex items-center justify-between cursor-pointer">
-            <div class="flex items-center space-x-2">
-                <input type="checkbox" class="accent-primary size-4 rounded border-gray-300" :value="category.id"
-                    v-model="selected" />
-                <span class="font-normal">{{ category.name }}</span>
-            </div>
+        <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="radio" class="accent-primary size-4" :value="category.id" v-model="selected" />
+            <span>{{ category.name }}</span>
         </label>
 
         <!-- Children -->
         <div v-if="category.children?.length" class="pl-6 border-l-2 border-gray-200 space-y-2">
-            <CategoryCheckbox v-for="child in category.children" :key="child.id" :category="child" v-model="selected" />
+            <CategoryItem v-for="child in category.children" :key="child.id" :category="child" v-model="selected" />
         </div>
     </div>
 </template>
