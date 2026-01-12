@@ -3,7 +3,6 @@ import Default from "@/layouts/Default.vue";
 import { onMounted, reactive, ref } from "vue";
 import BaseSelect from "@/components/BaseSelect.vue";
 import BaseTextarea from "@/components/BaseTextarea.vue";
-import QuillEditor from "@/components/QuillEditor.vue";
 import BaseInput from "@/components/BaseInput.vue";
 import IconClose from "@/components/icons/IconClose.vue";
 import BaseFile from "@/components/BaseFile.vue";
@@ -217,7 +216,7 @@ onMounted(() => {
                                         <div class="form__group">
                                             <label class="form__label">Brands</label>
                                             <select v-model="form.brand_id" class="form__control">
-                                                <option value="" disabled="">Select Brands</option>
+                                                <option value="">Individual Collection</option>
                                                 <template v-for="brand in brands" :key="brand.id">
                                                     <option :value="brand.id">
                                                         {{ brand.name }}
@@ -238,14 +237,18 @@ onMounted(() => {
                                         <BaseInput label="Canonical url" v-model="form.canonical_url"
                                             placeholder="e.g. wireless-bluetooth-headphone" error="" />
                                         <small class="text-muted">https://example.com/{{ form.canonical_url
-                                            }}</small>
+                                        }}</small>
                                     </div>
 
-                                    <QuillEditor label="Overview" v-model="form.overview"
-                                        placeholder="Enter short overviw" />
+                                    <div class="form__group">
+                                        <label class="form__lebel">Overview</label>
+                                        <QuillEditor theme="snow" toolbar="minimal" v-model="form.overview" />
+                                    </div>
 
-                                    <QuillEditor label="Description" v-model="form.description"
-                                        placeholder="Enter product description..." />
+                                    <div class="form__group">
+                                        <label class="form__lebel">Description</label>
+                                        <QuillEditor theme="snow" toolbar="full" v-model="form.description" />
+                                    </div>
                                 </div>
                             </section>
 
@@ -291,7 +294,7 @@ onMounted(() => {
                             </section>
                         </div>
 
-                        <div class="flex-none w-80 space-y-4">
+                        <div class="flex-none w-96 space-y-4">
 
                             <!-- pricing -->
                             <section class="bg-white rounded-xl">
@@ -342,7 +345,7 @@ onMounted(() => {
                                 <h2 class="font-medium border-b border-dashed px-4 py-4">Media</h2>
                                 <div class="px-4 py-2.5 space-y-4">
                                     <div class="grid grid-cols-2 gap-2">
-                                        <BaseFile label="Cover )" v-model="form.cover" :required="true" error="" />
+                                        <BaseFile label="Cover" v-model="form.cover" :required="true" error="" />
                                         <BaseFile label="OG Image" v-model="form.og_image" :required="true" error="" />
                                     </div>
                                     <BaseMultipleFile label="Gallery" v-model="form.gallery" :required="true"

@@ -65,6 +65,7 @@ export const useProductStore = defineStore("product", {
       try {
         const response = await apiClient.get(`/api/vendor/products/${product}`);
         if (response.status === 200) {
+          this.product = response.data;
           return Promise.resolve(response.data);
         }
       } catch (error) {
@@ -75,8 +76,9 @@ export const useProductStore = defineStore("product", {
     },
 
     async update(product, payload) {
+      this.loading = true;
       try {
-        const response = await apiClient.post(
+        const response = await apiClient.put(
           `/api/vendor/products/${product}`,
           payload
         );
@@ -89,6 +91,8 @@ export const useProductStore = defineStore("product", {
           Toast("error", error.response.data.message);
           return Promise.reject(error.reponse.data.errors);
         }
+      } finally {
+        this.loading = false;
       }
     },
   },

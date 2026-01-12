@@ -37,6 +37,8 @@ onMounted(() => {
               <thead class="bg-gray-50 border-b">
                 <tr class="text-left text-gray-600 font-medium">
                   <th class="px-4 py-3">Product</th>
+                  <th class="px-4 py-3">Category</th>
+                  <th class="px-4 py-3">Brand</th>
                   <th class="px-4 py-3">SKU</th>
                   <th class="px-4 py-3">Price</th>
                   <th class="px-4 py-3">Stock</th>
@@ -69,6 +71,12 @@ onMounted(() => {
                     </div>
                   </td>
 
+                  <td class="px-4 py-3 text-gray-600">
+                    {{ product.category?.name }}
+                  </td>
+                  <td class="px-4 py-3 text-gray-600">
+                    {{ product.brand?.name }}
+                  </td>
                   <td class="px-4 py-3 text-gray-600">
                     {{ product.sku }}
                   </td>
