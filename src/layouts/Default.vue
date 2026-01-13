@@ -22,7 +22,7 @@ const router = useRouter();
 
 
 const logout = async () => {
-  await router.push({ name: 'login' });
+  await authStore.logout();
 }
 </script>
 

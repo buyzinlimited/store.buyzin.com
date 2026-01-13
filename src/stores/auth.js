@@ -16,8 +16,6 @@ export const useAuthStore = defineStore("auth", {
 
   getters: {
     loggedIn: (state) => !!state.token,
-
-    role: (state) => state.user?.role ?? null,
   },
 
   actions: {
@@ -27,7 +25,6 @@ export const useAuthStore = defineStore("auth", {
         const response = await apiClient.post("/api/auth/login", formData);
         if (response.status === 200) {
           this.token = response.data.token;
-          this.user = response.data.user;
           return Promise.resolve(response);
         }
       } catch (error) {
@@ -45,9 +42,25 @@ export const useAuthStore = defineStore("auth", {
       try {
         const response = await apiClient.post("/api/auth/register", formData);
         if (response.status === 201) {
+          return Promise.resolve(response.data);
         }
       } catch (error) {
         this.errors = error.response.data.errors;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async getProfile() {
+      if (this.user) return this.user;
+      try {
+        const token = this.token;
+        if (!token) throw new Error("No token found");
+
+        const response = await apiClient.get("/api/profile");
+        this.user = response.data.data;
+      } catch (error) {
+        this.errors = error.response?.data?.errors;
       } finally {
         this.loading = false;
       }
@@ -60,7 +73,7 @@ export const useAuthStore = defineStore("auth", {
         if (response.status === 200) {
         }
       } catch (error) {
-        this.errors = error.response.data.errors;
+        this.errors = error.response?.data?.errors;
       } finally {
         this.loading = false;
       }
@@ -71,7 +84,7 @@ export const useAuthStore = defineStore("auth", {
         const response = await apiClient.post("/api/auth/logout");
         if (response.status === 200) {
           this.$reset();
-          return navigateTo("/");
+          window.location.href = "/login";
         }
       } catch (error) {
         if (error.response) {
