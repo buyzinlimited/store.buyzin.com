@@ -1,26 +1,28 @@
 import apiClient from "@/utils/axios";
 import { defineStore } from "pinia";
 
-export const useAppStore = defineStore("app", {
+export const useUserStore = defineStore("user", {
   state: () => ({
     loading: false,
     errors: {},
-    dashboard: [],
+    users: [],
+    user: {},
   }),
 
   getters: {},
 
   actions: {
-    async getDashboard() {
+    async all() {
       this.loading = true;
       try {
-        const response = await apiClient.get("api/v1/dashboard");
+        const response = await apiClient.get("/api/v1/users");
         if (response.status === 200) {
-          this.dashboard = response.data;
+          this.users = response.data;
+          return Promise.resolve(response.data);
         }
       } catch (error) {
-        if (error) {
-          return Promise.reject(error.response?.data?.errors);
+        if (error.reponse) {
+          return Promise.reject(error.reponse?.data?.errors);
         }
       } finally {
         this.loading = false;

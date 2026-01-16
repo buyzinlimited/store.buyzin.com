@@ -12,7 +12,7 @@ import { useCategoryStore } from "@/stores/category";
 import { useBrandStore } from "@/stores/brand";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-import BaseFilePond from "@/components/BaseFilePond.vue";
+import BaseSelectSearchable from "@/components/BaseSelectSearchable.vue";
 
 
 const route = useRoute();
@@ -29,7 +29,8 @@ const loadCategories = async () => {
     categories.value = response.data;
 }
 
-const brands = ref([]);
+const selectedBrand = ref('');
+const selectedCollection = ref('');
 
 const loadBrands = async () => {
     const response = await brandStore.all();
@@ -39,7 +40,8 @@ const loadBrands = async () => {
 const form = reactive({
     name: "",
     category_id: '',
-    brand_id: '',
+    brand_id: selectedBrand,
+    collection_id: selectedCollection,
 
     meta_title: "",
     meta_description: "",
@@ -104,6 +106,7 @@ const loadProduct = async () => {
     form.name = data.name;
     form.category_id = data.category?.id;
     form.brand_id = data.brand?.id;
+    form.collection_id = data.collection?.id;
     form.meta_title = data.meta_title;
     form.meta_description = data.meta_description;
     form.meta_keywords = data.meta_keywords;
@@ -186,7 +189,7 @@ onMounted(() => {
                             <div class="px-4 py-2.5 space-y-4">
                                 <BaseInput label="Product Name" v-model="form.name" :required="true" />
 
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-3 gap-4">
                                     <div class="form__group">
                                         <label class="form__label">Categories</label>
                                         <select v-model="form.category_id" class="form__control">
@@ -214,7 +217,13 @@ onMounted(() => {
                                         </select>
                                     </div>
 
-                                    <div class="form__group">
+                                    <BaseSelectSearchable label="Brands" v-model="selectedBrand"
+                                        url="/api/v1/brands/search" placeholder="Enter brands" />
+
+                                    <BaseSelectSearchable label="Collections" v-model="selectedCollection"
+                                        url="/api/v1/collections/search" placeholder="Enter collections" />
+
+                                    <!-- <div class="form__group">
                                         <label class="form__label">Brands</label>
                                         <select v-model="form.brand_id" class="form__control">
                                             <option value="">Individual Collection</option>
@@ -224,7 +233,7 @@ onMounted(() => {
                                                 </option>
                                             </template>
                                         </select>
-                                    </div>
+                                    </div> -->
                                 </div>
 
                                 <BaseInput label="Meta Title" v-model="form.meta_title"
@@ -238,7 +247,7 @@ onMounted(() => {
                                     <BaseInput label="Canonical url" v-model="form.canonical_url"
                                         placeholder="e.g. wireless-bluetooth-headphone" error="" />
                                     <small class="text-muted">https://example.com/{{ form.canonical_url
-                                        }}</small>
+                                    }}</small>
                                 </div>
 
                                 <div class="form__group">
@@ -417,8 +426,8 @@ onMounted(() => {
                                     placeholder="Enter product conditions" />
 
                                 <BaseSelect label="Status" v-model="form.status" :items="[
-                                    { label: 'Public', value: 'public' },
-                                    { label: 'Draft', value: 'draft' },
+                                    { id: 'public', name: 'Public' },
+                                    { id: 'draft', name: 'Draft', },
                                 ]" />
                             </div>
                         </section>

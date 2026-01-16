@@ -8,7 +8,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  error: String,
+  required: { type: Boolean, default: false },
+  placeholder: { type: String, default: "" },
+  error: { type: String, default: "" },
+  disabled: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -25,15 +28,18 @@ const modelValue = computed({
       {{ label }}
     </label>
     <select v-model="modelValue" :class="[
-      'w-full border rounded px-3 py-1.5 focus:outline-cyan-500 focus:ring focus:ring-cyan-200',
+      'w-full border rounded px-3 py-2 focus:outline-cyan-500 focus:ring focus:ring-cyan-200',
       error ? 'border-red-500' : 'border-gray-300',
     ]">
-      <option v-for="item in items" :key="item.value" :value="item.value">
-        {{ item.label }}
+      <option v-for="item in items" :key="item.id" :value="item.id">
+        {{ item.name }}
       </option>
     </select>
     <small v-if="error" class="text-red-500">{{ error[0] }}</small>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* <BaseSelect label="Status" v-model="form.collection_id"
+    :items="brands.map(brand => ({ id: brand.id, name: brand.name }))" /> */
+</style>

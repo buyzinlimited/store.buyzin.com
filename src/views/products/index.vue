@@ -4,6 +4,7 @@ import { onMounted } from "vue";
 import { useProductStore } from "@/stores/product";
 import { storeToRefs } from "pinia";
 import Loading from "@/components/Loading.vue";
+import NotFound from "@/components/NotFound.vue";
 
 const productStore = useProductStore();
 const { products } = storeToRefs(productStore);
@@ -121,11 +122,8 @@ onMounted(() => {
         </div>
       </template>
       <template v-else>
-        <p>not found</p>
-
+        <NotFound />
       </template>
-
-
     </main>
   </Default>
 </template>

@@ -1,10 +1,12 @@
 import apiClient from "@/utils/axios";
 import { defineStore } from "pinia";
 
-export const useCategoryStore = defineStore("category", {
+export const useCategoryStore = defineStore("collection", {
   state: () => ({
     loading: false,
     errors: {},
+    collections: [],
+    collection: {},
   }),
 
   getters: {},
@@ -13,7 +15,7 @@ export const useCategoryStore = defineStore("category", {
     async all() {
       this.loading = true;
       try {
-        const response = await apiClient.get("/api/v1/categories");
+        const response = await apiClient.get("/api/v1/collections");
         if (response.status === 200) {
           return Promise.resolve(response.data);
         }
@@ -29,7 +31,7 @@ export const useCategoryStore = defineStore("category", {
     async search(query) {
       this.loading = true;
       try {
-        const response = await apiClient.get("/api/v1/categories/search", {
+        const response = await apiClient.get("/api/v1/collections/search", {
           params: {
             query: query,
           },

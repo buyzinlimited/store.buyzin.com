@@ -26,6 +26,29 @@ app.use(Toast, {
   timeout: 2000,
   position: POSITION.TOP_CENTER,
 });
+
+app.config.globalProperties.$date = (
+  dateString,
+  options = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  }
+) => {
+  if (!dateString) return "";
+
+  const date = new Date(dateString.replace(" ", "T"));
+
+  return new Intl.DateTimeFormat("en-GB", options).format(date);
+
+  // $date(order.created_at, {
+  //   year: "numeric",
+  //   month: "short",
+  //   day: "2-digit",
+  //   hour: "2-digit",
+  //   minute: "2-digit",
+  // });
+};
 app.component("Pagination", Vueginate);
 app.component("QuillEditor", QuillEditor);
 app.mount("#app");

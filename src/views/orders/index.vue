@@ -1,159 +1,127 @@
 <script setup>
+import Loading from "@/components/Loading.vue";
+import NotFound from "@/components/NotFound.vue";
 import Default from "@/layouts/Default.vue";
+import { useOrderStore } from "@/stores/order";
+import { storeToRefs } from "pinia";
+import { onMounted } from "vue";
+
+const orderStore = useOrderStore();
+const { orders } = storeToRefs(orderStore);
+
+const loadOrders = async () => {
+  await orderStore.all();
+}
+
+const confirmOrder = async (id) => {
+  if (confirm('Are you sure you went to approved this order?')) {
+    await orderStore.approved(id);
+  }
+}
+
+onMounted(() => {
+  loadOrders();
+});
 </script>
 
 <template>
   <Default>
-    <div class="space-y-6">
-      <!-- Header + Filter -->
-      <div class="flex justify-between items-center">
-        <h3 class="text-xl font-semibold">Overview</h3>
-
-        <div class="relative">
-          <button
-            class="flex items-center justify-between w-40 bg-white border border-gray-300 rounded px-3 py-2 text-sm"
-          >
-            Last Week
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <path d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-
-          <!-- dropdown -->
-          <ul
-            class="absolute hidden bg-white shadow-lg border border-gray-200 rounded mt-1 w-40 text-sm z-20"
-          >
-            <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer">
-              Last Week
-            </li>
-            <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer">2 Week</li>
-            <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer">
-              One Month
-            </li>
-            <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer">6 Month</li>
-          </ul>
-        </div>
+    <div class="card">
+      <div class="card__header">
+        <h3 class="card__title">Orders</h3>
+        <RouterLink to="/" class="card__link">Add Order</RouterLink>
       </div>
 
-      <!-- Filter Buttons -->
-      <div class="flex gap-3">
-        <button class="px-4 py-2 bg-gray-100 rounded text-sm font-medium">
-          All 250
-        </button>
-        <button class="px-4 py-2 bg-gray-100 rounded text-sm font-medium">
-          New Item 150
-        </button>
-        <button class="px-4 py-2 bg-gray-100 rounded text-sm font-medium">
-          Disabled 154
-        </button>
-      </div>
+      <template v-if="orderStore.loading">
+        <Loading />
+      </template>
+      <template v-else-if="orders.data">
+        <div class="card__body">
 
-      <!-- Table -->
-      <div class="bg-white shadow rounded overflow-hidden">
-        <div class="p-4 flex justify-between items-center">
-          <div>
-            <label class="text-sm">
-              Show
-              <select class="border rounded px-2 py-1 text-sm">
-                <option>10</option>
-                <option>25</option>
-                <option>50</option>
-                <option>100</option>
-              </select>
-              entries
-            </label>
-          </div>
-
-          <div>
-            <label class="text-sm">
-              Search:
-              <input
-                type="text"
-                class="border rounded px-2 py-1 text-sm ml-1"
-              />
-            </label>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-sm">
-            <thead class="bg-gray-100 text-left">
+          <table>
+            <thead>
               <tr>
-                <th class="p-3 font-medium">Order No</th>
-                <th class="p-3 font-medium">Customer</th>
-                <th class="p-3 font-medium">Date</th>
-                <th class="p-3 font-medium">Amount</th>
-                <th class="p-3 font-medium">Category</th>
-                <th class="p-3 font-medium text-right">Status</th>
+                <th>Order No</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Payment</th>
+                <th>Total</th>
+                <th>Delivery</th>
+                <th>Items</th>
+                <th>Status</th>
+                <th class="text-right">Action</th>
               </tr>
             </thead>
 
             <tbody>
-              <!-- single row -->
-              <tr class="border-b">
-                <td class="p-3 flex items-center gap-3">
-                  <input type="checkbox" class="h-4 w-4" />
-                  <p class="text-blue-600 font-semibold">#87451</p>
+              <tr v-for="order in orders.data">
+                <td>#{{ order.order_number }}</td>
+                <td>{{ $date(order.created_at) }}</td>
+                <td>
+                  <h4 class="font-semibold">{{ order.user?.name }}</h4>
+                  <span class="text-xs">{{ order.user?.phone }}</span>
                 </td>
-
-                <td class="p-3 font-semibold text-gray-800">Esther Howard</td>
-
-                <td class="p-3 font-semibold text-gray-800">02/03/2022</td>
-
-                <td class="p-3 font-semibold text-gray-800">$200</td>
-
-                <td class="p-3 font-semibold text-gray-800">Notebook</td>
-
-                <td class="p-3 text-right">
+                <td>
+                  <span class="badge" :class="{
+                    'bg-yellow-100 text-yellow-800': order.payment_status === 'pending',
+                    'bg-green-100 text-green-800': order.payment_status === 'completed',
+                    'bg-blue-100 text-blue-800': order.payment_status === 'failed',
+                    'bg-indigo-100 text-indigo-800': order.payment_status === 'refunded',
+                    'bg-red-100 text-red-800': order.payment_status === 'cancelled',
+                  }">
+                    {{ order.payment_status }}
+                  </span>
+                </td>
+                <td>{{ order.total_formatted }}</td>
+                <td>N/A</td>
+                <td>{{ order.items?.length }} Items</td>
+                <td>
+                  <span class="badge" :class="{
+                    'bg-yellow-100 text-yellow-800': order.status === 'pending',
+                    'bg-green-100 text-green-800': order.status === 'confirmed',
+                    'bg-blue-100 text-blue-800': order.status === 'processing',
+                    'bg-indigo-100 text-indigo-800': order.status === 'shipped',
+                    'bg-emerald-100 text-emerald-800': order.status === 'delivered',
+                    'bg-red-100 text-red-800': order.status === 'cancelled',
+                    'bg-gray-100 text-gray-800': order.status === 'returned',
+                  }">
+                    {{ order.status }}
+                  </span>
+                </td>
+                <td class="text-right ">
                   <div class="flex items-center justify-end gap-2">
-                    <p class="text-green-600 font-medium">Delivered</p>
-                    <img src="#" class="w-5 h-5" />
-                    <div
-                      class="flex gap-2 text-sm text-blue-500 cursor-pointer"
-                    >
-                      <span>Edit</span>
-                      <span>Delete</span>
-                    </div>
+                    <button @click="confirmOrder(order.id)" class="action__success"
+                      :disabled="order.status === 'confirmed'" :class="{
+                        'cursor-not-allowed opacity-50 pointer-events-none':
+                          order.status === 'confirmed'
+                      }">
+                      Confirm
+                    </button>
+                    <RouterLink :to="{ name: 'orders.show', params: { id: order.id } }" class="action__info">
+                      View
+                    </RouterLink>
+                    <button @click="cancelOrder(order.id)" class="action__danger"
+                      :disabled="order.status === 'cancelled'" :class="{
+                        'cursor-not-allowed opacity-50 pointer-events-none':
+                          order.status === 'cancelled'
+                      }">
+                      Cancel
+                    </button>
                   </div>
                 </td>
               </tr>
-
-              <!-- Copy more rows as needed... -->
             </tbody>
           </table>
+
+          <Pagination v-if="orders.meta" class="px-4 py-6" :total-items="orders.meta.total"
+            :current-page="orders.meta.current_page" :items-per-page="orders.meta.per_page" :pages-to-show="2"
+            @page-change="loadOrders" visible-always />
+
         </div>
-
-        <!-- Pagination -->
-        <div class="flex justify-between items-center p-4 text-sm">
-          <p>Showing 1 to 10 of 31 entries</p>
-
-          <div class="flex gap-2">
-            <button
-              class="px-3 py-1 border rounded text-gray-500 cursor-not-allowed"
-            >
-              First
-            </button>
-            <button
-              class="px-3 py-1 border rounded text-gray-500 cursor-not-allowed"
-            >
-              Previous
-            </button>
-
-            <button class="px-3 py-1 border rounded bg-gray-200">1</button>
-            <button class="px-3 py-1 border rounded">2</button>
-            <button class="px-3 py-1 border rounded">3</button>
-            <button class="px-3 py-1 border rounded">4</button>
-
-            <button class="px-3 py-1 border rounded">Next</button>
-            <button class="px-3 py-1 border rounded">Last</button>
-          </div>
-        </div>
-      </div>
+      </template>
+      <template v-else>
+        <NotFound />
+      </template>
     </div>
   </Default>
 </template>
