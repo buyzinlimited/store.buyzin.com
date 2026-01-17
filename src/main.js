@@ -1,5 +1,6 @@
 import "./assets/main.css";
-import Toast, { POSITION } from "vue-toastification";
+
+import Toast, { POSITION, useToast } from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
 import { Vueginate } from "vueginate";

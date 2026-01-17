@@ -14,8 +14,16 @@ const loadOrders = async () => {
 }
 
 const confirmOrder = async (id) => {
-  if (confirm('Are you sure you went to approved this order?')) {
-    await orderStore.approved(id);
+  if (confirm('Are you sure you went to confirm this order?')) {
+    await orderStore.confirm(id);
+    await loadOrders();
+  }
+}
+
+const cancelOrder = async (id) => {
+  if (confirm('Are you sure you went to cancel this order?')) {
+    await orderStore.cancel(id);
+    await loadOrders();
   }
 }
 
@@ -74,7 +82,7 @@ onMounted(() => {
                 </td>
                 <td>{{ order.total_formatted }}</td>
                 <td>N/A</td>
-                <td>{{ order.items?.length }} Items</td>
+                <td>{{ order.items_count }} Items</td>
                 <td>
                   <span class="badge" :class="{
                     'bg-yellow-100 text-yellow-800': order.status === 'pending',
